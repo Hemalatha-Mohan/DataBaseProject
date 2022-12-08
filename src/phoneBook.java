@@ -375,11 +375,12 @@ public class phoneBook {
     {    
         try
         {
+        	Statement stm = conn.createStatement();
         	Scanner s=new Scanner(System.in);
         	 System.out.println("Enter the p_id:");
         	 int number = Integer.parseInt(s.nextLine());
             //Create a Statement
-            Statement stm = conn.createStatement();
+          // Statement stm = conn.createStatement();
             String query = ("select  people.p_id,people.FirstName,people.LastName,people.Email,contacts.contactNo,contacts.Category,Address.AddCategories,\r\n"
     		 		+ "Address.Door_no,Address.StreetName,Address.city,Address.State,Address.Postalcode,Address.Country\r\n"
     		 		+ "from people\r\n"
@@ -389,8 +390,8 @@ public class phoneBook {
     		 		+ "Address.contact_id \r\n"
     		 		+ "where people.p_id = "+ number);
     		
-    		 Statement stmt = conn.createStatement();
-    		 ResultSet rs = stmt.executeQuery(query);
+    		 //Statement stmt = conn.createStatement();
+    		 ResultSet rs = stm.executeQuery(query);
     		 
     		 if(rs.next()) {
     			 
@@ -499,7 +500,7 @@ public class phoneBook {
         while(flag)
         {
             
-            System.out.println("Enter 'RP' to Retrieve data from people \nEnter 'RC' to Retrieve data from Contacts \nEnter 'RA' to Retrieve data from Address \nEnter  'S' to Start\nEnter your choice " );
+            System.out.println("Enter 'RP' to Retrieve data from people \nEnter 'RC' to Retrieve data from Contacts \nEnter 'RA' to Retrieve data from Address \nEnter'RAll' to Retrieve all data from DataBase\nEnter'RPT' to Retrieve all data from DataBase\nEnter  'S' to Start\nEnter your choice " );
             String c=s.nextLine();
             System.out.println("\n");
             
@@ -518,6 +519,18 @@ public class phoneBook {
            	RetrieveDataFromAddress();
                 System.out.println("\n");
             }
+            
+           else if("RALL".equals(c))
+           {
+          	RetrieveAllDataFromAddress();
+               System.out.println("\n");
+           }
+            
+           else if("RPT".equals(c))
+           {
+        	   ViewByPartialText();
+               System.out.println("\n");
+           }
            else if("S".equals(c))
            {
           	UserInput();
@@ -536,6 +549,59 @@ public class phoneBook {
             }
         
     }}
+    //Retrieve All Data From three tables without join command
+    private static void RetrieveAllDataFromAddress()
+    {
+    	 try
+         {
+             //Create a Statement
+             Statement stm = conn.createStatement();
+             
+             //Execute Query and Get Result set
+             ResultSet rs =stm.executeQuery("select Address_id,FirstName, LastName, Email, Relationship, Birthday,\r\n"
+             		+ "ContactNo, Category,\r\n"
+             		+ "AddCategories, Door_no, StreetName, City, State, Postalcode, Country from people p,\r\n"
+             		+ "contacts c, Address A where p.p_id =c.p_id and\r\n"
+             		+ "c.contact_id = A.contact_id;");
+             
+             System.out.println("Address_id   FirstName    LastName    Email     Relationship     Birthday	ContactNo	Category	AddCategories	 Door_no	 StreetName	 City	 State	 Postalcode	 Country	 ");
+             
+             
+             //Loop to print each record
+             while(rs.next())
+             {
+                 
+                 System.out.print(rs.getInt("Address_id")+" ");
+                 System.out.printf("%10s",rs.getString("FirstName")+"    ");
+                 System.out.printf("%10s",rs.getString("LastName")+"     ");
+                 System.out.printf("%10s",rs.getString("Email")+"      ");
+                 System.out.printf("%10s",rs.getString("Relationship")+"    ");
+                 System.out.printf("%10s",rs.getString("Birthday")+"   ");
+                 System.out.printf("%10s",rs.getString("ContactNo")+"    ");
+                 System.out.printf("%10s",rs.getString("Category")+"     ");
+                 System.out.printf("%10s",rs.getString("AddCategories")+"      ");
+                 System.out.printf("%10s",rs.getString("Door_no")+"    ");
+                 System.out.printf("%10s",rs.getString("StreetName")+"   ");
+                 System.out.printf("%10s",rs.getString("City")+"     ");
+                 System.out.printf("%10s",rs.getString("State")+"      ");
+                 System.out.printf("%10s",rs.getString("Postalcode")+"    ");
+                 System.out.printf("%10s",rs.getString("Country")+"  \n  ");
+                 
+                 
+                 
+                 
+             }
+             System.out.println("data Retreived successfully from All Tables");
+             stm.close();
+             
+         }
+         catch (SQLException e) 
+         {
+             System.out.println(e);
+             
+         }
+     }
+    	
     
     
     //Retrieve Data From People
@@ -661,6 +727,68 @@ public class phoneBook {
         }
     }
     
+    /*---------------------------------------------------------------------------*/   
+    //Reteriving data by partial text
+    static void ViewByPartialText()
+    {    
+        try
+        {
+        	
+        	Scanner s=new Scanner(System.in);
+        	System.out.println("Enter the StringToFind: ");
+            String StringToFind = s.nextLine();
+            
+       	    
+            Statement stm = conn.createStatement();
+            String Sql = ("select  people.p_id,people.FirstName,people.LastName,people.Email,contacts.contactNo,contacts.Category,Address.AddCategories,\r\n"
+            		+ "Address.Door_no,Address.StreetName,Address.city,Address.State,Address.Postalcode,Address.Country\r\n"
+            		+ "from people\r\n"
+            		+ "join contacts on people.p_id=\r\n"
+            		+ "contacts.p_id\r\n"
+            		+ "join Address on contacts.contact_id = \r\n"
+            		+ "Address.contact_id \r\n"
+            		+ "where people.FirstName like\r\n"
+            		+ StringToFind );
+           
+         
+           
+            //Execute Query and Get Result set
+            ResultSet rs =stm.executeQuery(Sql);
+            		
+           // System.out.println("Address_id   FirstName    LastName    Email     Relationship     Birthday	ContactNo	Category	AddCategories	 Door_no	 StreetName	 City	 State	 Postalcode	 Country	");
+            
+            
+            //Loop to print each record
+            while(rs.next())
+            {
+                
+               System.out.print(rs.getInt("p_id")+" ");
+               System.out.print("First name: "+rs.getString(2)+", ");
+        	      System.out.print("Last name: "+rs.getString(3)+", ");
+        	      System.out.print("Email: "+rs.getString(4)+", ");
+        	      System.out.print("contactNo: "+rs.getString(5)+", ");
+        	      System.out.print("Category: "+rs.getString(6)+" ,");
+        	      System.out.print("AddCategory: "+rs.getString(7)+" ,");
+        	      System.out.print("Door_no: "+rs.getString(8)+" ,");
+        	      System.out.print("StreetName: "+rs.getString(9)+" ,");
+        	      System.out.print("City: "+rs.getString(10)+" ,");
+        	      System.out.print("State: "+rs.getString(11)+" ,");
+        	      System.out.print("Postalcode: "+rs.getString(12)+" ,");
+        	      System.out.print("Country: "+rs.getString(13)+"\n ");
+                
+                
+                
+            }
+            System.out.println("data viewed successfully from all tables");
+            stm.close();
+            
+        }
+        catch (SQLException e) 
+        {
+            System.out.println(e);
+            
+        }
+    }
     /*---------------------------------------------------------------------------*/   
     
 //Inserting into database
@@ -1051,8 +1179,10 @@ public class phoneBook {
 		Update();
 		Insert();
 		 RetrieveData();
+		 ViewByPartialText();
 		 View();
 		closeconnection();
+		
 
 	}
 
