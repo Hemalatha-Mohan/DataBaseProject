@@ -695,7 +695,7 @@ public class phoneBook {
             //Execute Query and Get Result set
             ResultSet rs =stm.executeQuery("select *from Address");
             
-            System.out.println("Address_id   Categories  Door_no  StreetName   City  State   Postalcode  Country  contact_id ");
+            System.out.println("Address_id   AddCategories  Door_no  StreetName   City  State   Postalcode  Country  contact_id ");
             
             
             //Loop to print each record
@@ -703,7 +703,7 @@ public class phoneBook {
             {
                 
                 System.out.print(rs.getInt("Address_id")+" ");
-                System.out.printf("%10s",rs.getString("Categories")+"    ");
+                System.out.printf("%10s",rs.getString("AddCategories")+"    ");
                 System.out.printf("%10s",rs.getString("Door_no")+"     ");
                 System.out.printf("%10s",rs.getString("StreetName")+"     ");
                 System.out.printf("%10s",rs.getString("City")+"     ");
