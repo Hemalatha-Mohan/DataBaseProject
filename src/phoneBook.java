@@ -136,7 +136,7 @@ public class phoneBook {
         while(flag)
         {
             
-            System.out.println("Enter 'UP' to Update data in people \nEnter 'UC' to Update data in Contacts \nEnter 'UA' to update data into Address \nEntaet 'S' to start\nEnter  'E' to exit\nEnter your choice " );
+            System.out.println("Enter 'UP' to Update data in people \nEnter 'UC' to Update data in Contacts \nEnter 'UA' to update data into Address\nEnter'USP to update single field in people \nEnter 'S' to start\nEnter  'E' to exit\nEnter your choice " );
             String c=s4.nextLine();
             System.out.println("\n");
             
@@ -155,7 +155,12 @@ public class phoneBook {
            	UpdateAddress();
                 System.out.println("\n");
             }
-            
+           else if("USP".equals(c))
+           {
+          	UpdateSingleFieldInPeople();
+               System.out.println("\n");
+           }
+           
            else if("S".equals(c))
            {
           	UserInput();
@@ -319,6 +324,128 @@ public class phoneBook {
         } 
       System.out.println("update people success");  
             
+    }
+    
+    
+    private static void UpdateSingleFieldInPeople() {
+    	try
+		{
+		
+		Scanner s=new Scanner(System.in);
+   	    System.out.println("Enter the p_id:");
+   	    int p_id = Integer.parseInt(s.nextLine());
+   	    String query = "select *from people  where p_id = "+p_id;
+   	   
+   	    Statement stm = conn.createStatement();	
+   	    ResultSet rs =stm.executeQuery(query);
+   	 
+   	 
+   	 
+   	      
+             if(rs.next()) {
+            	 int peopleId = rs.getInt("p_id");
+            	 String FirstName = rs.getString("FirstName");
+            	 String LastName = rs.getString("LastName");
+            	 String Email = rs.getString("Email");
+            	 String Relationship = rs.getString("Relationship");
+            	 String Birthday = rs.getString("Birthday");
+            	 
+            	 System.out.println("people Id"+p_id);
+            	 System.out.println("First Name"+FirstName);
+            	 System.out.println("Last Name"+LastName);
+            	 System.out.println("Email"+Email);
+            	 System.out.println("Relationship"+Relationship);
+            	 System.out.println("Birthday"+Birthday);
+            	 
+            	 System.out.println("What do you want to update");
+            	 System.out.println("1.First Name");
+            	 System.out.println("2.Last Name");
+            	 System.out.println("3.Email");
+            	 System.out.println("4.Relationship");
+            	 System.out.println("5.Birthday");
+            	 
+            	 
+            	int choice = Integer.parseInt(s.nextLine());
+            	String sqlQuery = "update people set ";
+            	 
+            	 switch(choice) {
+            	 case 1:
+            		 System.out.println("Enter the new First Name");
+            		 String FirstName1 = s.nextLine();
+            		 sqlQuery = sqlQuery + "FirstName = ? where p_id = "+p_id;
+            	     PreparedStatement preparedstatement = conn.prepareStatement(sqlQuery);
+            		 preparedstatement.setString(1, FirstName1);
+            		
+            	     int rows = preparedstatement.executeUpdate();
+            		 if(rows>0) {
+            			 System.out.println("record updated");
+            		 }
+            		 break;
+            		 
+            	 case 2:
+            		 System.out.println("Enter the new Last Name");
+            		 String LastName1 = s.nextLine();
+            		 sqlQuery = sqlQuery + "LasttName = ? where p_id = "+p_id;
+            	     PreparedStatement preparedstatement1 = conn.prepareStatement(sqlQuery);
+            		 preparedstatement1.setString(1, LastName1);
+            	     int rows1 = preparedstatement1.executeUpdate();
+            		 if(rows1>0) {
+            			 System.out.println("record updated");
+            		 }
+            		
+            	break;
+            	 case 3:
+            		 System.out.println("Enter the new Email");
+            		 String Email1 = s.nextLine();
+            		 sqlQuery = sqlQuery + "Email = ? where p_id = "+p_id;
+            	     PreparedStatement preparedstatement2 = conn.prepareStatement(sqlQuery);
+            		 preparedstatement2.setString(1, Email1);
+            	     int rows2 = preparedstatement2.executeUpdate();
+            		 if(rows2>0) {
+            			 System.out.println("record updated");
+            		 }
+            		 break;
+            	 case 4:
+            		 System.out.println("Enter the new Relationship");
+            		 String Relationship1 = s.nextLine();
+            		 sqlQuery = sqlQuery + "Relationship = ? where p_id = "+p_id;
+            	     PreparedStatement preparedstatement3 = conn.prepareStatement(sqlQuery);
+            		 preparedstatement3.setString(1, Relationship1);
+            	     int rows3 = preparedstatement3.executeUpdate();
+            		 if(rows3>0) {
+            			 System.out.println("record updated");
+            		 }
+            		break;
+            	 case 5:
+            		 System.out.println("Enter the new Birthday");
+            		 String Birthday1 = s.nextLine();
+            		 sqlQuery = sqlQuery + "Birthday = ? where p_id = "+p_id;
+            	     PreparedStatement preparedstatement4 = conn.prepareStatement(sqlQuery);
+            		 preparedstatement4.setString(1, Birthday1);
+            	     int rows4 = preparedstatement4.executeUpdate();
+            		 if(rows4>0) {
+            			 System.out.println("record updated");
+            		 }
+            		
+            	break;
+            	default:
+            		break;
+            	 }
+            	 
+            	 
+             }
+             
+             else {
+            	 System.out.println("records not found");
+             }
+             stm.close();
+		}
+		 catch (SQLException e)
+        {
+           System.out.println(e);
+        } 
+      
+          
     }
 /*---------------------------------------------------------------------------------*/ 
     
@@ -522,7 +649,7 @@ public class phoneBook {
             
            else if("RALL".equals(c))
            {
-          	RetrieveAllDataFromAddress();
+          	RetrieveAllData();
                System.out.println("\n");
            }
             
@@ -550,7 +677,7 @@ public class phoneBook {
         
     }}
     //Retrieve All Data From three tables without join command
-    private static void RetrieveAllDataFromAddress()
+    private static void RetrieveAllData()
     {
     	 try
          {
